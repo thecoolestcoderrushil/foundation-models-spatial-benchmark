@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import atexit
 import csv
+import json
 import os
 import sys
 import time
@@ -51,6 +52,7 @@ RESULTS = ROOT / "results"
 CSV = RESULTS / "benchmark_results.csv"
 LOG = RESULTS / "benchmark.log"
 LOCK = RESULTS / "benchmark.lock"
+STATUS = RESULTS / "benchmark.status.json"
 
 FIELDS = ["donor", "ref", "mov", "damage_type", "severity", "seed", "method",
           "metric", "value", "n_spots", "runtime_s", "failed", "reason", "timestamp"]
@@ -68,6 +70,22 @@ def log(msg):
     RESULTS.mkdir(exist_ok=True)
     with open(LOG, "a", encoding="ascii", errors="replace") as fh:
         fh.write(line + "\n")
+
+
+def heartbeat(**info):
+    """Atomically write a per-cell status file so a watcher can tell 'died'
+    from 'still grinding on a slow cell'. Written before each method call
+    (state=running) and at end (state=done). Never raises."""
+    info["pid"] = os.getpid()
+    info["time"] = now()
+    try:
+        RESULTS.mkdir(exist_ok=True)
+        tmp = STATUS.with_suffix(".json.tmp")
+        with open(tmp, "w", encoding="ascii", errors="replace") as fh:
+            json.dump(info, fh)
+        os.replace(tmp, STATUS)
+    except Exception:
+        pass
 
 
 def acquire_lock():
@@ -233,6 +251,9 @@ def run(args):
                         key = (donor, mov_id, dtype, str(sev), str(seed), m.name)
                         if key in seen:
                             continue
+                        heartbeat(state="running", pair=f"{donor} {ref_id}->{mov_id}",
+                                  damage_type=dtype, severity=sev, seed=seed,
+                                  method=m.name, cells_done=len(seen))
                         try:
                             if m.name == "rigid":
                                 out = m.register(ref_slim, mov_slim)   # fast, in-proc
@@ -263,6 +284,7 @@ def run(args):
                         log(f"  {m.name:7s} {dtype:11s} sev{sev} seed{seed}: "
                             f"med={rows[1]['value']} rt={rt}s failed={rows[0]['failed']}")
     worker.close()
+    heartbeat(state="done", cells_done=len(seen), cells_this_run=total)
     log(f"SWEEP COMPLETE ({total} method-cells this run) -> {CSV}")
     log("DONE")
 
