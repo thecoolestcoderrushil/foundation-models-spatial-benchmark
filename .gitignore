@@ -11,3 +11,7 @@ _fmtest*/
 results/*.console.log
 results/.phase0_pid
 results/*.lock
+_stalign311/
+results/bench311.log
+results/stalign311.log
+results/gpsa_install.log
