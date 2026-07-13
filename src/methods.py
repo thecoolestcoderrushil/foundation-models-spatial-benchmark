@@ -120,6 +120,7 @@ class Paste(Method):
 
     def register(self, ref, mov, alpha=0.1):
         import paste
+        import ot.optim
         t0 = time.time()
         try:
             # Use precomputed PCA features (obsm['X_pca']) + euclidean cost so the
@@ -128,7 +129,29 @@ class Paste(Method):
             kw = {}
             if "X_pca" in ref.obsm and "X_pca" in mov.obsm:
                 kw = dict(dissimilarity="euclidean", use_rep="X_pca")
-            pi = paste.pairwise_align(ref, mov, alpha=alpha, **kw)
+            # POT>=0.9 compat: ot.optim.cg now calls line_search with a 6th
+            # positional arg (df_G, the gradient at G) that paste-bio's 5-arg
+            # closures don't accept -> "takes 5 positional arguments but 6 were
+            # given". Wrap cg for the duration of this call to drop df_G (paste's
+            # armijo/closed-form line searches don't use it). Scoped + restored so
+            # paste2/gpsa/stalign are unaffected.
+            _orig_cg = ot.optim.cg
+
+            def _cg_compat(*a, **kk):
+                a = list(a)
+                if len(a) >= 8:
+                    _ls = a[7]
+                    a[7] = lambda cost, G, dG, Mi, cG, df_G=None, *r, **k: _ls(cost, G, dG, Mi, cG, **k)
+                elif kk.get("line_search") is not None:
+                    _ls = kk["line_search"]
+                    kk["line_search"] = lambda cost, G, dG, Mi, cG, df_G=None, *r, **k: _ls(cost, G, dG, Mi, cG, **k)
+                return _orig_cg(*a, **kk)
+
+            ot.optim.cg = _cg_compat
+            try:
+                pi = paste.pairwise_align(ref, mov, alpha=alpha, **kw)
+            finally:
+                ot.optim.cg = _orig_cg
             pred = barycentric(pi, np.asarray(ref.obsm["spatial"], float))
             failed = not np.isfinite(pred).any()
             return dict(pred_xy=pred, runtime_s=time.time() - t0,
