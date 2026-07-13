@@ -33,8 +33,12 @@ SEVERITY = {
     "tissue_loss": dict(area_frac=[0.0, 0.05, 0.10, 0.20, 0.35, 0.50]),  # fraction of spots removed
     "fold":        dict(flap_frac=[0.0, 0.08, 0.15, 0.25, 0.35, 0.45]),  # fraction of extent folded over
     "stretch":     dict(peak_pitch=[0.0, 2.0, 4.0, 7.0, 11.0, 16.0]),   # peak local displacement, spot-pitches
+    # secondary: boundary-reaching tear (slit opens the outline); same gap schedule
+    "tear_edge":   dict(gap_pitch=[0.0, 1.5, 3.0, 5.0, 8.0, 12.0]),
 }
 TEAR_PATHS = ("straight", "curved", "branching")
+PRIMARY_TYPES = ("tear", "tissue_loss", "fold", "stretch")
+SECONDARY_TYPES = ("tear_edge",)
 
 
 @dataclass
@@ -64,8 +68,9 @@ LABELS = ("intact", "removed", "displaced", "folded", "stretched")
 # operators: each returns (new_coords[n,2], removed[n]bool, moved_label[n]str-ish, meta)
 # operating on the FULL input set (removal handled by the removed mask).
 # --------------------------------------------------------------------------- #
-def _tear(coords, pitch, ext, rng, *, gap_pitch, kind, cut_halfwidth_pitch=0.6):
-    paths = make_path(coords, kind, rng)
+def _tear(coords, pitch, ext, rng, *, gap_pitch, kind, cut_halfwidth_pitch=0.6,
+          boundary=False):
+    paths = make_path(coords, "edge" if boundary else kind, rng)
     n = len(coords)
     best = np.full(n, np.inf)
     side = np.ones(n)
@@ -86,13 +91,26 @@ def _tear(coords, pitch, ext, rng, *, gap_pitch, kind, cut_halfwidth_pitch=0.6):
     gap = gap_pitch * pitch
     disp = np.zeros((n, 2))
     move = ~removed
-    disp[move] = side[move, None] * (gap / 2.0) * normal[move]
+    if boundary:
+        # boundary-reaching tear: the path terminates on the section edge and only
+        # ONE lip retracts (by the full gap), so a slit opens the outline itself
+        # rather than an internal crack in a closed plate.
+        openside = move & (side > 0)
+        disp[openside] = gap * normal[openside]
+    else:
+        disp[move] = side[move, None] * (gap / 2.0) * normal[move]
     label = np.where(removed, "removed",
                      np.where(np.linalg.norm(disp, axis=1) > 1e-9, "displaced", "intact"))
-    meta = dict(path_kind=kind, n_paths=len(paths), gap_px=float(gap),
-                gap_pitch=float(gap_pitch), cut_halfwidth_px=float(cut_hw),
+    meta = dict(path_kind="edge" if boundary else kind, n_paths=len(paths),
+                gap_px=float(gap), gap_pitch=float(gap_pitch),
+                cut_halfwidth_px=float(cut_hw), boundary=bool(boundary),
                 n_removed=int(removed.sum()))
     return coords + disp, removed, label, meta
+
+
+def _tear_edge(coords, pitch, ext, rng, *, gap_pitch, kind="edge"):
+    return _tear(coords, pitch, ext, rng, gap_pitch=gap_pitch, kind="edge",
+                 boundary=True)
 
 
 def _tissue_loss(coords, pitch, ext, rng, *, area_frac):
@@ -159,7 +177,8 @@ def _stretch(coords, pitch, ext, rng, *, peak_pitch):
     return coords + disp, np.zeros(n, bool), label, meta
 
 
-_OPS = {"tear": _tear, "tissue_loss": _tissue_loss, "fold": _fold, "stretch": _stretch}
+_OPS = {"tear": _tear, "tissue_loss": _tissue_loss, "fold": _fold,
+        "stretch": _stretch, "tear_edge": _tear_edge}
 
 
 def _params_for(dtype, level, rng, tear_path=None):

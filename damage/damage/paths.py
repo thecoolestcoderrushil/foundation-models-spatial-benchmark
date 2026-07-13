@@ -77,8 +77,27 @@ def branching_path(coords, rng, amplitude_frac=0.08):
     return main, resample_polyline(branch)
 
 
+def edge_path(coords, rng):
+    """A path that STARTS on the section boundary and terminates in the interior
+    (for a boundary-reaching tear whose slit opens the outline itself)."""
+    c, _ = principal_axes(coords)
+    d0 = unit(rng.normal(size=2))
+    start = coords[np.argmax(coords @ d0)]            # an extreme (boundary) spot
+    inward = unit(c - start)
+    inward = rotation(rng.uniform(-0.4, 0.4)) @ inward
+    length = rng.uniform(0.45, 0.70) * extent(coords)
+    tip = start + inward * length
+    perp = np.array([-inward[1], inward[0]])
+    ts = np.linspace(0, 1, 80)
+    base = start[None] + (tip - start)[None] * ts[:, None]
+    wob = 0.06 * extent(coords) * rng.uniform(0.3, 1.0) * np.sin(np.pi * ts + rng.uniform(0, np.pi))
+    return resample_polyline(base + perp[None] * wob[:, None])
+
+
 def make_path(coords, kind, rng):
     """Return a list of polylines (branching returns two, others return one)."""
+    if kind == "edge":
+        return [edge_path(coords, rng)]
     if kind == "straight":
         return [straight_path(coords, rng)]
     if kind == "curved":

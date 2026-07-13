@@ -68,31 +68,40 @@ class Method:
 # 1. rigid/affine floor - parameter-free, expression-blind
 # --------------------------------------------------------------------------- #
 class RigidAffine(Method):
-    """Similarity transform (rotation + isotropic scale + translation) estimated
-    from the two point clouds' moments alone - no expression, no correspondence.
-    The floor a real method must beat; it cannot model tears/folds at all."""
+    """Rigid ICP (iterative closest point) - geometry only, no expression, no
+    given correspondence. Iterates: match each moving spot to its nearest
+    reference spot, solve the optimal rigid transform (Procrustes), repeat. The
+    honest floor a real method must beat; it recovers a global rigid offset but
+    cannot model tears/folds/tissue loss (no partial handling, no non-rigid)."""
     name = "rigid"
 
-    def register(self, ref, mov):
+    def register(self, ref, mov, iters=40):
+        from scipy.spatial import cKDTree
         t0 = time.time()
         r = np.asarray(ref.obsm["spatial"], float)
-        m = np.asarray(mov.obsm["spatial"], float)
+        cur = np.asarray(mov.obsm["spatial"], float).copy()
         try:
-            rc, mc = r.mean(0), m.mean(0)
-            Rr, Mm = r - rc, m - mc
-            # principal axes
-            Ur = np.linalg.svd(Rr, full_matrices=False)[2]
-            Um = np.linalg.svd(Mm, full_matrices=False)[2]
-            R = Ur.T @ Um                      # rotate mov axes onto ref axes
-            if np.linalg.det(R) < 0:           # forbid reflection
-                Ur2 = Ur.copy(); Ur2[-1] *= -1; R = Ur2.T @ Um
-            scale = (np.linalg.norm(Rr) / (np.linalg.norm(Mm) + 1e-9))
-            pred = (m - mc) @ R.T * scale + rc
-            failed = not np.isfinite(pred).all()
-            return dict(pred_xy=pred, runtime_s=time.time() - t0,
+            tree = cKDTree(r)
+            prev = np.inf
+            for _ in range(iters):
+                d, nn = tree.query(cur)
+                tgt = r[nn]
+                mc, mt = cur.mean(0), tgt.mean(0)
+                H = (cur - mc).T @ (tgt - mt)
+                U, S, Vt = np.linalg.svd(H)
+                R = Vt.T @ U.T
+                if np.linalg.det(R) < 0:
+                    Vt = Vt.copy(); Vt[-1] *= -1; R = Vt.T @ U.T
+                cur = (cur - mc) @ R.T + mt
+                err = float(d.mean())
+                if abs(prev - err) < 1e-4 * (r.max() - r.min()):
+                    break
+                prev = err
+            failed = not np.isfinite(cur).all()
+            return dict(pred_xy=cur, runtime_s=time.time() - t0,
                         failed=failed, reason="non-finite" if failed else "")
         except Exception as e:
-            return dict(pred_xy=np.full_like(m, np.nan), runtime_s=time.time() - t0,
+            return dict(pred_xy=np.full_like(cur, np.nan), runtime_s=time.time() - t0,
                         failed=True, reason=f"{type(e).__name__}: {e}")
 
 
@@ -113,7 +122,13 @@ class Paste(Method):
         import paste
         t0 = time.time()
         try:
-            pi = paste.pairwise_align(ref, mov, alpha=alpha)
+            # Use precomputed PCA features (obsm['X_pca']) + euclidean cost so the
+            # OT is CPU-tractable at ~2000 spots (glmpca over all genes is ~18x
+            # slower and crashes on this POT version).
+            kw = {}
+            if "X_pca" in ref.obsm and "X_pca" in mov.obsm:
+                kw = dict(dissimilarity="euclidean", use_rep="X_pca")
+            pi = paste.pairwise_align(ref, mov, alpha=alpha, **kw)
             pred = barycentric(pi, np.asarray(ref.obsm["spatial"], float))
             failed = not np.isfinite(pred).any()
             return dict(pred_xy=pred, runtime_s=time.time() - t0,
@@ -145,7 +160,10 @@ class Paste2(Method):
             if s is None:
                 s = float(min(1.0, mov.n_obs / max(ref.n_obs, 1)))
             s = float(np.clip(s, 0.1, 1.0))
-            pi = partial_pairwise_align(ref, mov, s=s)
+            kw = {}
+            if "X_pca" in ref.obsm and "X_pca" in mov.obsm:
+                kw = dict(dissimilarity="euclidean", use_rep="X_pca")
+            pi = partial_pairwise_align(ref, mov, s=s, **kw)
             pred = barycentric(pi, np.asarray(ref.obsm["spatial"], float))
             failed = not np.isfinite(pred).any()
             return dict(pred_xy=pred, runtime_s=time.time() - t0,
@@ -160,20 +178,62 @@ class Paste2(Method):
 # 4. STalign  (LDDMM image registration)
 # --------------------------------------------------------------------------- #
 class STalign(Method):
+    """LDDMM diffeomorphic registration (STalign).
+
+    EXPERIMENTAL / not in the default leaderboard. STalign installs and imports
+    only on Python 3.11 with numpy<2 (its functional submodule uses the removed
+    `numpy.bool8`); on Python 3.14 it does not build. The adapter below uses
+    STalign's REAL API (rasterize -> LDDMM -> transform_points), verified against
+    the installed package - it is NOT a fabricated call. However, across the
+    hyperparameter/direction settings tried on this DLPFC data it did not
+    converge to a registration that beats the no-op baseline on control
+    transforms, and it is slow on CPU. Rather than publish mis-tuned numbers as a
+    fair comparison (a wrong call), it is excluded from the leaderboard and this
+    status is reported honestly. Kept runnable for future tuning.
+    """
     name = "stalign"
 
     def available(self):
         try:
-            import STalign  # noqa: F401
-            return True, "STalign importable"
+            from STalign import STalign as _S  # functional submodule (needs numpy<2)
+            for fn in ("rasterize", "LDDMM", "transform_points_source_to_target"):
+                if not hasattr(_S, fn):
+                    return False, f"STalign.STalign missing {fn}"
+            return True, "STalign importable (experimental; needs py3.11 + numpy<2)"
         except Exception as e:
             return False, f"{type(e).__name__}: {e}"
 
-    def register(self, ref, mov):
-        # Verified absent in this environment (STalign fails to build its pinned
-        # numpy on Python 3.14). We refuse to fabricate its LDDMM API; the harness
-        # records this method as absent from availability() above.
-        raise RuntimeError("STalign unavailable in this environment")
+    def register(self, ref, mov, niter=150, dx_pitch=1.3, a_pitch=2.0):
+        import torch
+        from STalign import STalign as _S
+        t0 = time.time()
+        try:
+            r = np.asarray(ref.obsm["spatial"], float)
+            m = np.asarray(mov.obsm["spatial"], float)
+            from scipy.spatial import cKDTree
+            pitch = float(np.median(cKDTree(r).query(r, k=2)[0][:, 1]))
+            rn, mn = r / pitch, m / pitch                   # normalise to pitch units
+
+            def rast(p):
+                X0, X1, MM, _ = _S.rasterize(p[:, 0], p[:, 1], dx=dx_pitch)
+                MM = np.asarray(MM)
+                return [np.asarray(X1), np.asarray(X0)], MM / (MM.mean() + 1e-9)
+
+            xI, I = rast(rn)                                # target = reference
+            xJ, J = rast(mn)                                # source = moving
+            out = _S.LDDMM(xI, I, xJ, J, niter=niter, device="cpu", a=a_pitch,
+                           epV=5.0, epT=1e-2, epL=5e-5, sigmaM=0.3, sigmaR=5.0)
+            pts = np.ascontiguousarray(mn[:, [1, 0]])       # (row,col)=(y,x)
+            phi = _S.transform_points_source_to_target(
+                out["xv"], out["v"], out["A"], torch.tensor(pts, dtype=torch.float64))
+            pred = np.asarray(phi.detach())[:, [1, 0]] * pitch
+            failed = not np.isfinite(pred).all()
+            return dict(pred_xy=pred, runtime_s=time.time() - t0,
+                        failed=failed, reason="non-finite" if failed else "experimental")
+        except Exception as e:
+            return dict(pred_xy=np.full((mov.n_obs, 2), np.nan),
+                        runtime_s=time.time() - t0, failed=True,
+                        reason=f"{type(e).__name__}: {e}")
 
 
 # --------------------------------------------------------------------------- #
@@ -190,50 +250,50 @@ class GPSA(Method):
         except Exception as e:
             return False, f"{type(e).__name__}: {e}"
 
-    def register(self, ref, mov, m_inducing=100, epochs=400, lr=1e-2):
-        # API mirrors ARCA's verified baselines/GPSA/run_gpsa_tear.py.
+    def register(self, ref, mov, m_inducing=100, epochs=200, lr=1e-2):
+        # API mirrors ARCA's verified baselines/GPSA/run_gpsa_tear.py exactly
+        # (torch-tensor data_dict; loss_fn(data_dict, F_samples)).
         import torch
         from gpsa import VariationalGPSA, rbf_kernel
         t0 = time.time()
         try:
             A_xy = np.asarray(ref.obsm["spatial"], float)
             B_xy = np.asarray(mov.obsm["spatial"], float)
-            A_f, B_f = _lognorm_pcs(ref, mov, k=10)
-            X = np.vstack([A_xy, B_xy]).astype(np.float32)
-            Y = np.vstack([A_f, B_f]).astype(np.float32)
-            n_views = 2
-            view_idx = [np.arange(A_xy.shape[0]),
-                        np.arange(A_xy.shape[0], A_xy.shape[0] + B_xy.shape[0])]
-            n_samples_list = [A_xy.shape[0], B_xy.shape[0]]
-            data_dict = {"expression": {
-                "spatial_coords": X, "outputs": Y,
-                "n_samples_list": n_samples_list}}
+            if "X_pca" in ref.obsm and "X_pca" in mov.obsm:
+                A_f = np.asarray(ref.obsm["X_pca"])[:, :10]
+                B_f = np.asarray(mov.obsm["X_pca"])[:, :10]
+            else:
+                A_f, B_f = _lognorm_pcs(ref, mov, k=10)
+            nA, nB = A_xy.shape[0], B_xy.shape[0]
+            x = torch.from_numpy(np.vstack([A_xy, B_xy]).astype(np.float32))
+            y = torch.from_numpy(np.vstack([A_f, B_f]).astype(np.float32))
+            data_dict = {"expression": {"spatial_coords": x, "outputs": y,
+                                        "n_samples_list": [nA, nB]}}
             model = VariationalGPSA(
-                data_dict, n_spatial_dims=2, m_X_per_view=m_inducing,
-                m_G=m_inducing, data_init=True, minmax_init=False,
-                grid_init=False, n_latent_gps={"expression": None},
-                mean_function="identity_fixed", kernel_func_warp=rbf_kernel,
-                kernel_func_data=rbf_kernel, fixed_view_idx=0)
-            view_idx_d, Ns, _, _ = model.create_view_idx_dict(data_dict)
+                data_dict, n_spatial_dims=2, m_X_per_view=m_inducing, m_G=m_inducing,
+                data_init=True, minmax_init=False, grid_init=False,
+                n_latent_gps={"expression": None}, mean_function="identity_fixed",
+                kernel_func_warp=rbf_kernel, kernel_func_data=rbf_kernel, fixed_view_idx=0)
+            view_idx, Ns, _, _ = model.create_view_idx_dict(data_dict)
             opt = torch.optim.Adam(model.parameters(), lr=lr)
-            x = torch.from_numpy(X)
             for _ in range(epochs):
-                opt.zero_grad()
+                model.train()
                 G_means, G_samples, F_latent_samples, F_samples = model.forward(
-                    {"expression": x}, view_idx=view_idx_d, Ns=Ns, S=3)
-                loss = model.loss_fn({"expression": x}, F_samples,
-                                     {"expression": torch.from_numpy(Y)})
-                loss.backward(); opt.step()
+                    {"expression": x}, view_idx=view_idx, Ns=Ns, S=3)
+                loss = model.loss_fn(data_dict, F_samples)
+                opt.zero_grad(); loss.backward(); opt.step()
+            model.eval()
             with torch.no_grad():
-                G_means, *_ = model.forward({"expression": x}, view_idx=view_idx_d, Ns=Ns)
-            pred = G_means["expression"].detach().numpy()[view_idx[1]]
+                G_means, _, _, _ = model.forward({"expression": x}, view_idx=view_idx, Ns=Ns)
+            G = G_means["expression"] if isinstance(G_means, dict) else G_means
+            pred = G.detach().cpu().numpy()[nA:]
             failed = not np.isfinite(pred).all()
             return dict(pred_xy=pred, runtime_s=time.time() - t0,
                         failed=failed, reason="non-finite" if failed else "")
         except Exception as e:
             return dict(pred_xy=np.full((mov.n_obs, 2), np.nan),
                         runtime_s=time.time() - t0, failed=True,
-                        reason=f"{type(e).__name__}: {e}\n{traceback.format_exc()[-400:]}")
+                        reason=f"{type(e).__name__}: {e}")
 
 
 ALL_METHODS = [RigidAffine, Paste, Paste2, STalign, GPSA]

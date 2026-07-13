@@ -15,3 +15,5 @@ _stalign311/
 results/bench311.log
 results/stalign311.log
 results/gpsa_install.log
+results/smoke*.log
+results/paste2_speed.log

@@ -89,6 +89,28 @@ python src/plots.py                         # figures from results/benchmark_res
 The sweep is resumable (skips completed cells), incremental (appends per cell),
 single-instance-locked, and detached-friendly.
 
+## Limitations
+
+- **The tear is a crack in a fixed plate, not a boundary-reaching separation.**
+  For the four primary damage types the section's outer boundary stays a closed
+  polygon while damage opens *internally*. Real torn sections have lips that
+  separate at the tissue edge, opening the outline itself. Our primary tears do
+  not, which makes the task **easier than reality**: a method can anchor on the
+  intact outline. We keep it this way because exact per-spot ground truth is
+  worth more here than visual realism. A secondary **`tear_edge`** condition
+  (boundary-reaching tear whose slit opens the outline) is included at severity
+  {0,4} to probe this gap, but the primary leaderboard is on interior damage.
+- **Sections are damaged copies of themselves plus a synthetic rigid
+  misalignment**, not two biologically distinct serial sections; this isolates
+  the damage effect but omits real inter-section biological variation.
+- **STalign is excluded from the leaderboard.** It installs and imports only on
+  Python 3.11 + numpy<2, and its adapter uses the real API, but it did not
+  converge to a registration beating the no-op baseline on control transforms
+  across the hyperparameters tried, and is slow on CPU. We report this rather
+  than publish mis-tuned numbers. **PASTE** is excluded too (its internal FGW
+  call breaks against POT>=0.9's `line_search`); its partial-OT successor
+  **PASTE2** is used.
+
 ## Status
 
 **Stop gate: the damage model is implemented and rendered as reference|damaged
