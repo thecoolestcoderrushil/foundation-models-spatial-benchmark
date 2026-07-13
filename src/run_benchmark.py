@@ -57,7 +57,7 @@ STATUS = RESULTS / "benchmark.status.json"
 FIELDS = ["donor", "ref", "mov", "damage_type", "severity", "seed", "method",
           "metric", "value", "n_spots", "runtime_s", "failed", "reason", "timestamp"]
 METRIC_KEYS = ["mean_pitch", "median_pitch", "p90_pitch", "label_acc",
-               "runtime_s", "failed", "n_scored"]
+               "runtime_s", "failed", "n_scored", "unmatched_frac", "s_used"]
 
 
 def now():
@@ -169,7 +169,9 @@ def cell_rows(base, method, out, err, lab, degen_reason, n_spots):
     vals = dict(mean_pitch=err["mean_pitch"], median_pitch=err["median_pitch"],
                 p90_pitch=err["p90_pitch"], label_acc=lab["label_acc"],
                 runtime_s=out["runtime_s"], failed=int(failed),
-                n_scored=err["n_scored"])
+                n_scored=err["n_scored"],
+                unmatched_frac=err.get("unmatched_frac", ""),
+                s_used=out.get("s_used", ""))
     rows = [{**base, "method": method, "metric": k, "value": vals[k],
              "n_spots": n_spots, "runtime_s": round(out["runtime_s"], 2),
              "failed": int(failed), "reason": str(reason)[:120], "timestamp": now()}
@@ -231,6 +233,7 @@ def run(args):
             log(f"[{donor}] feature build failed: {e}"); continue
         layer_ref = D.layer_labels(ref0); layer_mov0 = D.layer_labels(mov0)
         ref_slim = slim(ref0, np.asarray(ref0.obsm["spatial"], float), Xr)
+        ref_centroid = np.asarray(ref_slim.obsm["spatial"], float).mean(0)
         mov_xy = np.asarray(mov0.obsm["spatial"], float)
         log(f"pair {donor} {ref_id}->{mov_id}: n={ref0.n_obs}/{mov0.n_obs} "
             f"pitch={pitch:.0f} bridge={have.mean()*100:.0f}%")
@@ -261,10 +264,12 @@ def run(args):
                                 out, _ = worker.call(m.name, ref_slim, mov_slim, args.timeout)
                             pred = out.get("pred_xy")
                             if pred is None:
-                                err = dict(mean_pitch="", median_pitch="", p90_pitch="", n_scored=0)
+                                err = dict(mean_pitch="", median_pitch="", p90_pitch="",
+                                           n_scored=0, unmatched_frac="")
                                 lab = dict(label_acc="", n_label=0); dreason = "no prediction"
                             else:
-                                err = M.registration_error(pred, gt_s, have_s, pitch)
+                                err = M.registration_error(pred, gt_s, have_s, pitch,
+                                                            ref_centroid=ref_centroid)
                                 lab = M.label_transfer_accuracy(pred, ref_slim, mov_slim,
                                                                 have_s, layer_ref, layer_mov)
                                 degen, dreason = M.is_degenerate(pred, ref_slim)
@@ -291,7 +296,7 @@ def run(args):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--methods", default="rigid,paste2,gpsa",
+    p.add_argument("--methods", default="rigid,paste,paste2,paste2_s1,stalign,gpsa",
                    help="comma list; absent auto-skip. PASTE excluded (POT>=0.9 "
                         "line_search API break); STalign experimental/off by default")
     p.add_argument("--n-spots", type=int, default=2000)

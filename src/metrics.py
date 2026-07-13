@@ -16,21 +16,39 @@ def spot_pitch(coords):
     return float(np.median(d[:, 1]))
 
 
-def registration_error(pred_xy, gt_xy, have, pitch):
-    """Mean & median per-spot displacement error over spots that have GT.
-    Returns dict in pitch units plus the scored count."""
+def registration_error(pred_xy, gt_xy, have, pitch, ref_centroid=None):
+    """Common-spot scoring. Error is measured over the SAME set for every method:
+    the common ground-truth-matchable set (all spots with GT). A method that
+    abstains (NaN prediction) is NOT let off -- its unmatched spots are penalised
+    with the error of the best uninformed predictor (the reference-tissue
+    centroid, passed as ``ref_centroid``), not dropped. This removes the
+    abstention bias whereby a partial method is graded only on the spots it chose.
+
+    Reports n_common (size of the common set), n_scored (finite errors after
+    penalty), and unmatched_frac (fraction of the common set the method abstained
+    on). If ref_centroid is None, falls back to the legacy drop-unmatched
+    behaviour (kept only for backward compatibility)."""
     pred = np.asarray(pred_xy, float)
     gt = np.asarray(gt_xy, float)
-    err = np.linalg.norm(pred - gt, axis=1)
-    valid = np.isfinite(err) & np.asarray(have, bool)
-    e = err[valid]
+    have = np.asarray(have, bool)
+    err = np.linalg.norm(pred - gt, axis=1)          # NaN where the method abstained
+    unmatched = have & ~np.isfinite(err)
+    n_common = int(have.sum())
+    unmatched_frac = float(unmatched.sum() / n_common) if n_common else np.nan
+    if ref_centroid is not None and unmatched.any():
+        c = np.asarray(ref_centroid, float).reshape(1, 2)
+        err[unmatched] = np.linalg.norm(gt[unmatched] - c, axis=1)  # penalty, not drop
+    scored = have & np.isfinite(err)
+    e = err[scored]
     if e.size == 0:
         return dict(rmse_pitch=np.nan, mean_pitch=np.nan, median_pitch=np.nan,
-                    p90_pitch=np.nan, n_scored=0)
+                    p90_pitch=np.nan, n_scored=0, n_common=n_common,
+                    unmatched_frac=unmatched_frac)
     e = e / pitch
     return dict(mean_pitch=float(e.mean()), median_pitch=float(np.median(e)),
                 p90_pitch=float(np.percentile(e, 90)),
-                rmse_pitch=float(np.sqrt((e ** 2).mean())), n_scored=int(e.size))
+                rmse_pitch=float(np.sqrt((e ** 2).mean())), n_scored=int(e.size),
+                n_common=n_common, unmatched_frac=unmatched_frac)
 
 
 def label_transfer_accuracy(pred_xy, ref, mov, mov_have, layer_ref, layer_mov):

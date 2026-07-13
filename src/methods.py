@@ -190,11 +190,23 @@ class Paste2(Method):
             pred = barycentric(pi, np.asarray(ref.obsm["spatial"], float))
             failed = not np.isfinite(pred).any()
             return dict(pred_xy=pred, runtime_s=time.time() - t0,
-                        failed=failed, reason="all-NaN plan" if failed else "")
+                        failed=failed, reason="all-NaN plan" if failed else "",
+                        s_used=s)
         except Exception as e:
             return dict(pred_xy=np.full((mov.n_obs, 2), np.nan),
                         runtime_s=time.time() - t0, failed=True,
-                        reason=f"{type(e).__name__}: {e}")
+                        reason=f"{type(e).__name__}: {e}", s_used=float(s))
+
+
+class Paste2S1(Paste2):
+    """PASTE2 with overlap forced to s=1 (no abstention): the no-abstention
+    control reported alongside the heuristic-s PASTE2, so a reader can see the
+    partial-overlap parameterisation is not hiding the result (see the
+    abstention-bias analysis)."""
+    name = "paste2_s1"
+
+    def register(self, ref, mov, s=None):
+        return super().register(ref, mov, s=1.0)
 
 
 # --------------------------------------------------------------------------- #
@@ -319,7 +331,7 @@ class GPSA(Method):
                         reason=f"{type(e).__name__}: {e}")
 
 
-ALL_METHODS = [RigidAffine, Paste, Paste2, STalign, GPSA]
+ALL_METHODS = [RigidAffine, Paste, Paste2, Paste2S1, STalign, GPSA]
 
 
 def probe_all():
