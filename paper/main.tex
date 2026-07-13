@@ -284,11 +284,28 @@ section reports, under common-spot scoring:
 \end{table}
 
 \section{Discussion}
-\pending{} We expect topology-changing damage (tear, fold) to degrade
-smooth-deformation methods faster than tissue loss, and partial-OT PASTE2 to hold
-longest under tissue loss. Whether any method meaningfully beats the rigid floor
-at high severity, and whether heavier methods (GPSA) earn their compute, is
-answered by the sweep. Negatives are reported plainly.
+\pending{} for all quantitative claims; the structural argument below does not
+depend on the numbers.
+
+\paragraph{Diffeomorphic registration cannot represent a tear.} STalign---like
+CODA and other LDDMM methods---computes a diffeomorphism: a smooth, invertible map
+with a smooth inverse. A diffeomorphism preserves topology by construction; it
+cannot tear, merge, or otherwise change the connectivity of its domain. A physical
+tear is precisely a change of topology---a connected region separates---so no
+diffeomorphism can represent it, at any smoothness scale or iteration count.
+STalign's large error on torn tissue (\pending{} pitches) is therefore not a
+tuning failure to be closed with better hyperparameters; it is a structural
+impossibility of the diffeomorphic model class---the failure lives in the
+hypothesis space, not the optimiser. This is the paper's central argument for why
+torn serial sections need a registration model that is not constrained to be
+diffeomorphic.
+
+All remaining claims await the common-spot sweep (\S\ref{sec:abstention}): whether
+topology-changing damage (tear, fold) degrades smooth-deformation methods faster
+than tissue loss; whether partial-OT PASTE2 escapes the rigid floor in the
+tissue-loss regime it targets; whether any method meaningfully beats the rigid
+floor at high severity; and whether heavier methods (GPSA) earn their compute.
+Negatives are reported plainly.
 
 \section{Limitations}
 \label{sec:limitations}
