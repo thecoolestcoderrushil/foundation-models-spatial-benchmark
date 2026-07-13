@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sttdamage"
+version = "0.1.0"
+description = "Reproducible synthetic tissue damage (tear/tissue-loss/fold/stretch) for spatial-transcriptomics serial-section registration benchmarks."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Rushil Maniar", email = "rushil@suturagenomics.bio" },
+    { name = "Sean Lee", email = "sean@suturagenomics.bio" },
+    { name = "Sunyoung Lee", email = "sslee1@mdanderson.org" },
+]
+keywords = ["spatial-transcriptomics", "registration", "benchmark", "visium", "tissue-damage"]
+dependencies = [
+    "numpy>=1.21",
+    "scipy>=1.7",
+]
+
+[project.optional-dependencies]
+viz = ["matplotlib>=3.5"]
+
+[tool.setuptools]
+packages = ["damage"]

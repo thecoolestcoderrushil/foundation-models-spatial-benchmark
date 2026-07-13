@@ -1,0 +1,47 @@
+[
+  {
+    "model": "scgpt",
+    "note": "PyPI package; needs a pretrained checkpoint + gene-vocab download, flash-attn (CUDA) for the fast path, and IPython/anndata pins.",
+    "installable": true,
+    "importable": false,
+    "status": "installed_but_broken",
+    "detail": "import failed: C:\\Users\\karti\\spatial-foundation-benchmark\\_fmtest\\scgpt\\Lib\\site-packages\\scgpt\\model\\model.py:21: UserWarning: flash_attn is not installed\n  warnings.warn(\"flash_attn is not installed\")\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"C:\\Users\\karti\\spatial-foundation-benchmark\\_fmtest\\scgpt\\Lib\\site-packages\\scgpt\\__init__.py\", line 18, in <module>\n    from . import model, tokenizer, scbank, utils, tasks\n  File \"C:\\Users\\karti\\spatial-foundation-benchmark\\_fmtest\\scgpt\\Lib\\site-packages\\scgpt\\model\\__init__.py\", line 8, in <module>\n    from .generation_model import *\n  File \"C:\\Users\\karti\\spatial-foundation-benchmark\\_fmtest\\scgpt\\Lib\\site-packages\\scgpt\\model\\generation_model.py\", line 21, in <module>\n    from ..utils import map_raw_id_to_vocab_id\n  File \"C:\\Users\\karti\\spatial-foundation-benchmark\\_fmtest\\scgpt\\Lib\\site-packages\\scgpt\\utils\\__init__.py\", line 1, in <module>\n    from .util import *\n  File \"C:\\Users\\karti\\spatial-foundation-benchmark\\_fmtest\\scgpt\\Lib\\site-packages\\scgpt\\utils\\util.py\", line 16, in <module>\n    from IPython import get_ipython\nModuleNotFoundError: No module named 'IPython'",
+    "install_s": 165.1
+  },
+  {
+    "model": "geneformer",
+    "note": "Not on PyPI; distributed as a HuggingFace git-LFS repo with tokenizer + median-expression dictionaries + model weights.",
+    "installable": true,
+    "importable": false,
+    "status": "installed_but_broken",
+    "detail": "import failed: Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"C:\\Users\\karti\\spatial-foundation-benchmark\\_fmtest\\geneformer\\Lib\\site-packages\\geneformer\\__init__.py\", line 17, in <module>\n    from . import (\n  File \"C:\\Users\\karti\\spatial-foundation-benchmark\\_fmtest\\geneformer\\Lib\\site-packages\\geneformer\\collator_for_classification.py\", line 12, in <module>\n    from transformers import (\nImportError: cannot import name 'SpecialTokensMixin' from 'transformers' (C:\\Users\\karti\\spatial-foundation-benchmark\\_fmtest\\geneformer\\Lib\\site-packages\\transformers\\__init__.py)",
+    "install_s": 83.6
+  },
+  {
+    "model": "uce",
+    "note": "Not a pip package; a GitHub research repo run via eval scripts, needs a multi-GB ESM2 protein-embedding file + model checkpoint.",
+    "installable": false,
+    "importable": false,
+    "status": "not_installable",
+    "detail": "install exit 2: Using Python 3.12.13 environment at: _fmtest\\uce\n   Updating https://github.com/snap-stanford/UCE.git (HEAD)\n    Updated https://github.com/snap-stanford/UCE.git (9c416007be15ad6753dc84af4468c1dc10421ab9)\nerror: C:\\Users\\karti\\AppData\\Local\\uv\\cache\\git-v0\\checkouts\\29c06e6bd1284d36\\9c41600 does not appear to be a Python project, as neither `pyproject.toml` nor `setup.py` are present in the directory",
+    "install_s": 3.7
+  },
+  {
+    "model": "scfoundation",
+    "note": "Not on PyPI; GitHub repo, weights gated behind a request form, designed for CUDA GPUs.",
+    "installable": false,
+    "importable": false,
+    "status": "not_installable",
+    "detail": "install exit 2: Using Python 3.12.13 environment at: _fmtest\\scfoundation\nerror: C:\\Users\\karti\\AppData\\Local\\uv\\cache\\git-v0\\checkouts\\e7a04259cdde48cf\\397631c does not appear to be a Python project, as neither `pyproject.toml` nor `setup.py` are present in the directory",
+    "install_s": 4.5
+  },
+  {
+    "model": "nicheformer",
+    "note": "theislab package; needs weights from HuggingFace/Zenodo and is built for GPU spatial-omics pretraining.",
+    "installable": false,
+    "importable": false,
+    "status": "not_installable",
+    "detail": "install exit 1: Using Python 3.12.13 environment at: _fmtest\\nicheformer\n  \u00c3\u2014 No solution found when resolving dependencies:\n  \u00e2\u2022\u00b0\u00e2\u201d\u20ac\u00e2\u2013\u00b6 Because nicheformer was not found in the package registry and you\n      require nicheformer, we can conclude that your requirements are\n      unsatisfiable.",
+    "install_s": 0.6
+  }
+]

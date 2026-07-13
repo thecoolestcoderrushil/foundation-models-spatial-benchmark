@@ -1,0 +1,13 @@
+# Large data + caches are not committed (regenerable / downloaded)
+data/
+cache/
+*.h5ad
+__pycache__/
+*.pyc
+.venv*/
+_fmtest*/
+# Results ARE committed (CSV, PNG, FINDINGS, logs are the deliverables)
+!results/
+results/*.console.log
+results/.phase0_pid
+results/*.lock

@@ -1,0 +1,20 @@
+# Core (always needed)
+numpy>=1.21
+scipy>=1.7
+scikit-learn>=1.0
+matplotlib>=3.5
+anndata>=0.9
+scanpy>=1.9
+
+# Registration methods (install honestly; some will not build in every env)
+POT>=0.9              # optimal transport backend for PASTE / PASTE2
+paste-bio             # PASTE  (import: paste)
+# paste2 is not on PyPI - install from GitHub:
+#   pip install "git+https://github.com/raphael-group/paste2.git"
+# STalign - LDDMM registration (fails to build its pinned numpy on Python 3.14):
+#   pip install "git+https://github.com/JEFworks-Lab/STalign.git"
+# GPSA - Gaussian-process spatial alignment (needs torch; local install):
+#   pip install -e baselines/GPSA --no-deps   # torch>=2 required separately
+
+# The damage generator itself has no heavy deps:
+#   pip install -e damage

@@ -1,0 +1,263 @@
+\documentclass[11pt]{article}
+
+% ---- packages (Overleaf-safe, no exotic deps) ----
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{authblk}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\usepackage{caption}
+
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[#1]}}}
+\newcommand{\pending}{\textcolor{red}{\emph{(pending sweep)}}}
+
+\title{\textbf{A reproducible tissue-damage benchmark for serial-section\\
+spatial-transcriptomics registration}}
+
+\author[1]{Rushil Maniar}
+\author[1]{Sean Lee}
+\author[2]{Sunyoung Lee, MD}
+\affil[1]{Sutura Genomics \quad \texttt{\{rushil,sean\}@suturagenomics.bio}}
+\affil[2]{Department of \todo{dept}, MD Anderson Cancer Center \quad \texttt{sslee1@mdanderson.org}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Serial-section spatial transcriptomics requires registering consecutive tissue
+sections into a common coordinate frame. In practice those sections are
+\emph{damaged}---torn on the slide, folded, cut, or partially lost---yet
+registration methods are almost always benchmarked on clean tissue, and their
+behaviour as damage increases is uncharacterised. We introduce (i) a
+reproducible, seeded generator of four physically-motivated damage types
+(tear, tissue loss, fold, stretch) with exact per-spot ground-truth transforms;
+(ii) a harness that sweeps damage severity against every available registration
+method; and (iii) a degradation leaderboard on the spatialLIBD DLPFC corpus,
+whose Visium array coordinates provide spot-level ground-truth correspondence
+invariant to the applied damage. All experiments are CPU-only and use public
+data with no gated models or downloaded weights. We report where each method
+breaks, at what severity, and whether its compute cost is justified by
+damage robustness. \pending{} for the quantitative leaderboard.
+\end{abstract}
+
+\section{Introduction}
+Spatial transcriptomics platforms such as 10x Visium profile gene expression at
+thousands of spatially-barcoded spots per tissue section. Building a
+three-dimensional or multi-section view requires \emph{registration}: mapping
+each spot of a moving section into the coordinate frame of a reference section
+\cite{zeira2022paste}. Registration quality is the load-bearing step for every
+downstream 3D analysis.
+
+Real serial sections are rarely pristine. Cryosectioning and slide handling tear
+tissue, fold flaps over, cut through regions, and lose material at the margins.
+These are not smooth deformations---tears and folds change the local topology of
+the section---and they are precisely the regime in which smooth-deformation
+registration assumptions are expected to fail. Yet published benchmarks evaluate
+registration on clean or lightly-perturbed tissue, and no systematic
+characterisation exists of \emph{how registration accuracy degrades as tissue
+damage increases}. This paper provides that characterisation.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+  \item \textbf{A damage generator} (\S\ref{sec:damage}): a standalone,
+  pip-installable, seeded package producing four damage types over five severity
+  levels, each emitting a damage mask and an \emph{exact} per-spot ground-truth
+  displacement, so registration error is measurable to the spot.
+  \item \textbf{A degradation harness} (\S\ref{sec:harness}): a resumable,
+  incremental sweep of every installable registration method across the full
+  damage grid, with honest reporting of methods that do not install.
+  \item \textbf{A leaderboard} (\S\ref{sec:results}): degradation curves,
+  failure rates, and compute cost on the spatialLIBD DLPFC serial-section corpus.
+\end{enumerate}
+
+\paragraph{Scope.} We deliberately exclude single-cell foundation-model
+featurizers. Their zero-shot representations already underperform simple
+baselines on spatial clustering and integration \cite{kedzierska2023assessing},
+and in our environment none of five candidate models (scGPT
+\cite{cui2024scgpt}, Geneformer \cite{theodoris2023geneformer}, UCE,
+scFoundation, Nicheformer) installs and imports on CPU
+(Appendix~\ref{sec:envcheck}). The question here is not representation learning
+but \emph{registration robustness under damage}, evaluated on classical methods.
+
+\section{The damage model}
+\label{sec:damage}
+Let a section be a set of spot coordinates $X=\{x_i\}_{i=1}^{n}\subset\mathbb{R}^2$
+with median nearest-neighbour pitch $p$ (all magnitudes are expressed in units of
+$p$ so they transfer across sections). A damage operator
+$\mathcal{D}_{t,\ell,s}$ is parameterised by type $t$, integer severity level
+$\ell\in\{0,\dots,5\}$ (with $\ell{=}0$ the undamaged control), and seed $s$. It
+returns, for each surviving spot, a damaged coordinate and the exact forward
+displacement $d_i = \tilde{x}_i - x_i$; removed spots are flagged in a mask.
+Registration ground truth is $\mathcal{D}^{-1}$: a method that recovers the
+original coordinate scores zero error. $\mathcal{D}_{t,\ell,s}$ is a pure
+function of $(t,\ell,s)$---the same triple reproduces the section bit-for-bit.
+
+\paragraph{Tear.} A cut propagating along a path---not a random blob. We generate
+a path crossing the section with three geometries: \emph{straight} (a chord),
+\emph{curved} (a sinusoidal wander about the chord), and \emph{branching} (a main
+path plus one fork). Spots within a narrow blade half-width of the path are
+removed; the remaining spots on each side retract along the \emph{local} cut
+normal by half the tear gap, so the two lips separate perpendicular to the cut
+everywhere along the path. The gap (in pitches) sets severity. The result is a
+piecewise-rigid, topology-changing displacement---the canonical failure case for
+smooth-deformation registration.
+
+\paragraph{Tissue loss.} A contiguous, edge-anchored region is removed. A seed is
+chosen at a section boundary and the nearest spots under an angularly-modulated
+metric are excised, giving an organic (non-circular) boundary. Severity is the
+fraction of spots removed (5--50\%). Surviving spots are undisplaced; the
+challenge is partial overlap, the regime partial-optimal-transport methods
+(PASTE2 \cite{liu2023paste2}) target.
+
+\paragraph{Fold.} A flap is doubled over a fold line: spots beyond the line are
+reflected across it and overlap the body, creating a region of doubled spot
+density. Severity is the folded flap's fraction of the section extent. The
+reflection is an exact, invertible map that no globally-smooth deformation can
+represent.
+
+\paragraph{Stretch.} A local non-rigid deformation near a boundary: a
+Gaussian-weighted radial expansion about a boundary anchor, with peak
+displacement (in pitches) setting severity. Unlike tear/fold it is continuous,
+isolating smooth-deformation error from topology change.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{../results/damage_examples/tear_grid.png}
+  \caption{Tear damage on DLPFC section 151507 across severity (columns, gap in
+  spot-pitches) and seed (rows). Severity 0 is the undamaged control. Grey =
+  intact, red = removed (blade path), blue = displaced. Seeds sample the three
+  tear geometries.}
+  \label{fig:tear}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{../results/damage_examples/tear_geometries.png}
+  \caption{Tear path geometries at severity 4: straight, curved, branching.}
+  \label{fig:teargeo}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.49\linewidth]{../results/damage_examples/tissue_loss_grid.png}
+  \includegraphics[width=0.49\linewidth]{../results/damage_examples/fold_grid.png}\\
+  \includegraphics[width=0.49\linewidth]{../results/damage_examples/stretch_grid.png}
+  \caption{Tissue loss (organic edge-anchored removal, 5--50\%), fold (orange
+  flap doubled over the body), and stretch (green local radial deformation),
+  across severity and seed.}
+  \label{fig:others}
+\end{figure}
+
+\section{Corpus and ground truth}
+We use the spatialLIBD dorsolateral prefrontal cortex (DLPFC) dataset
+\cite{maynard2021transcriptome}: 12 Visium sections from 3 donors
+($\times$ 4 consecutive sections). Adjacent within-donor sections are serial
+pairs. The Visium array index $(\text{row},\text{col})$ is preserved under our
+coordinate-space damage, giving a spot-level correspondence between reference and
+moving section that is invariant to the applied transform---the registration
+ground truth. This is the entire corpus by design; no other datasets are added.
+DLPFC additionally carries manual seven-class cortical-layer annotations
+(Layer 1--6 + white matter), enabling a label-transfer metric.
+
+\section{Methods under test}
+\label{sec:methods}
+\begin{itemize}
+  \item \textbf{rigid} --- a parameter-free similarity transform (rotation,
+  isotropic scale, translation) fit from the two point clouds' moments alone, no
+  expression. The floor a useful method must beat; it cannot represent tears or
+  folds.
+  \item \textbf{PASTE} \cite{zeira2022paste} --- Fused Gromov--Wasserstein optimal
+  transport on expression + spatial structure.
+  \item \textbf{PASTE2} \cite{liu2023paste2} --- partial OT, designed for partial
+  overlap (our tissue-loss regime).
+  \item \textbf{STalign} \cite{clifton2023stalign} --- LDDMM diffeomorphic image
+  registration.
+  \item \textbf{GPSA} \cite{jones2023gpsa} --- Gaussian-process spatial alignment.
+\end{itemize}
+Each method is probed for real installability; those that do not install in a
+given environment are recorded with their exact error and skipped, never stubbed
+with a fabricated API (Appendix~\ref{sec:methodenv}).
+
+\section{Harness and metrics}
+\label{sec:harness}
+For every serial pair, damage type, severity $0$--$5$, and seed ($10$ seeds per
+non-control cell), the moving section is damaged and registered to the reference
+by each available method. Sections are subsampled to a fixed spot budget so
+partial-OT methods are CPU-tractable. We record: registration error (mean and
+median per-spot displacement, in pitches), cortical-layer label-transfer
+accuracy, runtime, and failure rate (crashes plus degenerate/collapsed
+transforms). The harness is single-instance-locked, resumable (skips completed
+cells), and writes one CSV row per
+$(\text{donor}\times\text{pair}\times\text{type}\times\text{severity}\times
+\text{seed}\times\text{method}\times\text{metric})$ incrementally.
+
+\section{Results}
+\label{sec:results}
+\pending{} The degradation sweep is run after the damage renders
+(Figs.~\ref{fig:tear}--\ref{fig:others}) are validated. On completion this
+section reports:
+\begin{itemize}
+  \item Degradation curves (median error vs severity, one line per method,
+  faceted by damage type): \texttt{results/degradation\_curves.png}.
+  \item Failure rates by method and damage type:
+  \texttt{results/failure\_rates.png}.
+  \item Compute cost vs severity: \texttt{results/runtime\_scatter.png}.
+  \item A leaderboard of the severity at which each method crosses 1, 2, and 5
+  spot-pitch error and where it breaks (failure rate $>50\%$).
+\end{itemize}
+
+\begin{table}[h]
+  \centering
+  \caption{Severity at which each method breaks, per damage type. \pending}
+  \label{tab:leaderboard}
+  \begin{tabular}{lcccc}
+    \toprule
+    method & tear & tissue loss & fold & stretch \\
+    \midrule
+    rigid (floor) & \todo{--} & \todo{--} & \todo{--} & \todo{--} \\
+    PASTE  & \todo{--} & \todo{--} & \todo{--} & \todo{--} \\
+    PASTE2 & \todo{--} & \todo{--} & \todo{--} & \todo{--} \\
+    GPSA   & \todo{--} & \todo{--} & \todo{--} & \todo{--} \\
+    STalign & absent & absent & absent & absent \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Discussion}
+\pending{} We expect topology-changing damage (tear, fold) to degrade
+smooth-deformation methods faster than tissue loss, and partial-OT PASTE2 to hold
+longest under tissue loss. Whether any method meaningfully beats the rigid floor
+at high severity, and whether heavier methods (GPSA) earn their compute, is
+answered by the sweep. Negatives are reported plainly.
+
+\section{Reproducibility}
+The damage generator is a standalone package (\texttt{pip install -e damage});
+every damaged section is reproducible from $(\text{type},\text{severity},
+\text{seed})$. Code, the damage renders, the environment audits, and (on
+completion) the results CSV and figures are in the repository.
+
+\appendix
+\section{Foundation-model environment audit}
+\label{sec:envcheck}
+\pending{table from \texttt{results/env\_check.md}} All five candidate single-cell
+foundation models are unusable on the target host (Windows, CPU, Python 3.14):
+scGPT and Geneformer install but fail to import; UCE, scFoundation, and
+Nicheformer do not install. Exact errors are logged.
+
+\section{Registration-method environment audit}
+\label{sec:methodenv}
+\pending{table from \texttt{results/methods\_env.md}} \texttt{rigid}, PASTE, and
+PASTE2 are available; STalign fails to build its pinned NumPy on Python 3.14;
+GPSA requires a local install.
+
+\bibliographystyle{plain}
+\bibliography{refs}
+
+\end{document}
