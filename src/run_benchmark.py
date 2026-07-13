@@ -13,9 +13,12 @@ cell; per-cell try/except; progress log. Detached-friendly:
 
     nohup python -u src/run_benchmark.py > results/benchmark.console.log 2>&1 &
 
-Subsampling: partial OT (PASTE/PASTE2) is O(n_ref x n_mov); we subsample each
-section to --n-spots (default 600) so a full sweep is CPU-tractable. Subsampling
-is seeded and array-consistent so the reference/moving/GT stay aligned.
+Grid (revised): spot density is what the damage model acts on, so we do NOT
+subsample hard - sections are kept at ~2000 spots (--n-spots) so small tears stay
+meaningful and label-transfer is not noise. We trim the grid elsewhere: 4
+severities (--severities 0,2,4,5) and 5 seeds (--seeds). If a full run is still
+too slow, cut section PAIRS before cutting spots (--max-pairs / --pairs-per-donor)
+- never drop below ~2000 spots.
 """
 from __future__ import annotations
 
@@ -138,10 +141,24 @@ def run(args):
 
     seen = done_cells()
     log(f"resume: {len(seen)} cells already done")
-    severities = list(range(0, N_LEVELS + 1))
+    severities = args.severities
     total = 0
 
-    for donor, ref_id, mov_id in D.serial_pairs():
+    pairs = list(D.serial_pairs())
+    if args.pairs_per_donor:
+        by_donor = {}
+        kept = []
+        for pr in pairs:
+            by_donor.setdefault(pr[0], 0)
+            if by_donor[pr[0]] < args.pairs_per_donor:
+                kept.append(pr); by_donor[pr[0]] += 1
+        pairs = kept
+    if args.max_pairs:
+        pairs = pairs[:args.max_pairs]
+    log(f"pairs: {len(pairs)} | severities={severities} | seeds={args.seeds} "
+        f"| n_spots={args.n_spots}")
+
+    for donor, ref_id, mov_id in pairs:
         try:
             ref = D.load_section(ref_id)
             mov0 = D.load_section(mov_id)
@@ -200,12 +217,20 @@ def run(args):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--methods", default="rigid,paste,paste2,gpsa",
+    p.add_argument("--methods", default="rigid,paste,paste2,stalign,gpsa",
                    help="comma list; absent ones auto-skip")
-    p.add_argument("--n-spots", type=int, default=600)
-    p.add_argument("--seeds", type=int, default=10)
+    p.add_argument("--n-spots", type=int, default=2000,
+                   help="spots kept per section (do NOT drop below ~2000)")
+    p.add_argument("--seeds", type=int, default=5)
+    p.add_argument("--severities", default="0,2,4,5",
+                   help="comma list of severity levels to sweep")
+    p.add_argument("--pairs-per-donor", type=int, default=0,
+                   help="cap adjacent pairs per donor (0 = all 3); cut pairs "
+                        "before spots if too slow")
+    p.add_argument("--max-pairs", type=int, default=0, help="global cap on pairs (0=all)")
     args = p.parse_args()
     args.methods = set(s.strip() for s in args.methods.split(","))
+    args.severities = [int(x) for x in args.severities.split(",")]
     RESULTS.mkdir(exist_ok=True)
     if not acquire_lock():
         return

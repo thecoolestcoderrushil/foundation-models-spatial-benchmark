@@ -50,11 +50,23 @@ Damage renders for visual review: **`results/damage_examples/`**.
 (partial OT, built for tissue loss) · **STalign** (LDDMM) · **GPSA**
 (Gaussian-process alignment). Each is probed for real; unavailable methods are
 recorded with their exact error in `results/methods_env.md` and skipped — never
-stubbed with a fabricated API. This environment (Windows, CPU, Python 3.14):
-`rigid`, `PASTE`, `PASTE2` available; `STalign` fails to build; `GPSA` needs a
-local install. A prior foundation-model install audit is in
-`results/env_check.md` (all five single-cell FMs unusable here — motivating the
-CPU-only, classical-methods scope).
+stubbed with a fabricated API.
+
+**Environment.** All five methods run on **Python 3.11** (CPU). STalign does *not*
+build on Python 3.14 (its pinned NumPy fails to compile) but installs and imports
+cleanly on 3.11, so the benchmark environment is 3.11. GPSA is installed locally
+from `baselines/GPSA`. The sweep is therefore run with the 3.11 interpreter:
+
+```bash
+uv venv --python 3.11 .venv311
+uv pip install --python .venv311 -r requirements.txt \
+    "git+https://github.com/raphael-group/paste2.git" \
+    "git+https://github.com/JEFworks-Lab/STalign.git"
+uv pip install --python .venv311 --no-deps -e baselines/GPSA   # torch installed separately
+```
+
+A prior foundation-model install audit is in `results/env_check.md` (all five
+single-cell FMs unusable on this host — motivating the classical-methods scope).
 
 ## Metrics
 
@@ -79,8 +91,12 @@ single-instance-locked, and detached-friendly.
 
 ## Status
 
-**Stop gate: the damage model is implemented and rendered; the sweep has not been
-run.** Review `results/damage_examples/` first.
+**Stop gate: the damage model is implemented and rendered as reference|damaged
+pairs with the mask overlaid (`results/damage_examples/*_pairs.png`); the sweep
+has not been run.** Environment resolved: all five registration methods
+(rigid, PASTE, PASTE2, STalign, GPSA) are available on Python 3.11. Grid set to
+~2000 spots, severities {0,2,4,5}, 5 seeds. Review the renders, then green-light
+the sweep.
 
 ## Authors
 
