@@ -75,6 +75,11 @@ damage increases}. This paper provides that characterisation.
   damage grid, with honest reporting of methods that do not install.
   \item \textbf{A leaderboard} (\S\ref{sec:results}): degradation curves,
   failure rates, and compute cost on the spatialLIBD DLPFC serial-section corpus.
+  \item \textbf{Common-spot scoring} (\S\ref{sec:abstention}): we show that
+  partial-registration methods can \emph{abstain}---decline to place spots---and
+  that scoring only matched spots systematically flatters them; we give a worked
+  case where this reverses a headline result, and prescribe a scoring protocol
+  that closes the loophole.
 \end{enumerate}
 
 \paragraph{Scope.} We deliberately exclude single-cell foundation-model
@@ -187,22 +192,70 @@ with a fabricated API (Appendix~\ref{sec:methodenv}).
 
 \section{Harness and metrics}
 \label{sec:harness}
-For every serial pair, damage type, severity $0$--$5$, and seed ($10$ seeds per
-non-control cell), the moving section is damaged and registered to the reference
-by each available method. Sections are subsampled to a fixed spot budget so
-partial-OT methods are CPU-tractable. We record: registration error (mean and
-median per-spot displacement, in pitches), cortical-layer label-transfer
-accuracy, runtime, and failure rate (crashes plus degenerate/collapsed
-transforms). The harness is single-instance-locked, resumable (skips completed
-cells), and writes one CSV row per
+For every serial pair, damage type, severity, and seed, the moving section is
+damaged and registered to the reference by each available method. Sections are
+subsampled to a fixed spot budget ($\sim$2000 spots) so partial-OT methods are
+CPU-tractable.
+
+\paragraph{Common-spot scoring.} Registration error is the per-spot displacement
+between a method's predicted coordinate and the array-bridge ground truth, in
+pitches. Every method is scored on the \emph{same} set of spots: the common
+ground-truth-matchable set for that cell (all moving spots with a known reference
+correspondence). A method that declines to place a spot---a partial-OT plan can
+leave a spot with essentially zero transported mass---does not have that spot
+dropped from its error; the unmatched spot is penalised with the error of the
+best uninformed predictor (the reference-tissue centroid). This removes the
+abstention bias analysed in \S\ref{sec:abstention}. For every cell we record, as
+first-class columns, the number of spots scored (\texttt{n\_scored}), the
+fraction a method left unmatched (\texttt{unmatched\_frac}), and, for partial-OT,
+the overlap parameter $s$ used; PASTE2 is reported at both its heuristic
+$s{=}n_\text{mov}/n_\text{ref}$ and at $s{=}1$ (no abstention), so its
+parameterisation is fully visible to the reader.
+
+We further record mean displacement, cortical-layer label-transfer accuracy,
+runtime, and failure rate (crashes plus degenerate/collapsed transforms). The
+harness is single-instance-locked, resumable (skips completed cells), writes a
+per-cell heartbeat, and writes one CSV row per
 $(\text{donor}\times\text{pair}\times\text{type}\times\text{severity}\times
 \text{seed}\times\text{method}\times\text{metric})$ incrementally.
 
+\section{Abstention bias in partial-registration benchmarks}
+\label{sec:abstention}
+Partial-registration methods can \emph{abstain}: a partial-optimal-transport plan
+(PASTE2) with overlap parameter $s<1$ transports only an $s$-fraction of the mass
+and can leave individual moving spots with essentially zero coupling, hence no
+predicted location. A benchmark that averages error only over matched spots
+therefore grades such a method on the subset of spots it chose to answer---
+systematically flattering it, and worst exactly in the partial-overlap regime
+these methods target.
+
+We encountered this directly. Our adapter set PASTE2's overlap to the observed
+spot ratio $s=n_\text{mov}/n_\text{ref}$. On a 50\%-tissue-loss section of DLPFC
+pair 151507/151508 this gives $s=0.5$, and PASTE2 leaves $\approx$43\% of the
+surviving moving spots unmatched. Scored only on the $\approx$250 spots it did
+match, its median error ($\approx$6 pitches) looks competitive with the
+parameter-free rigid floor---which is scored on all $\approx$410 matchable spots.
+The comparison is not apples-to-apples. Forcing $s{=}1$ removes the abstention,
+PASTE2 now places all $\approx$430 spots, and its median error rises to
+$\approx$12 pitches: the abstention was \emph{concealing} the loss, not causing
+it. The honest, common-spot result is that partial OT loses to the rigid floor
+on heavy tissue loss by roughly $2\times$---in the very regime it was built for.
+
+We therefore adopt \textbf{common-spot scoring} (\S\ref{sec:harness}) as a
+benchmark requirement whenever any method can abstain: (i) score every method on
+the same common ground-truth-matchable spot set; (ii) penalise unmatched
+predictions rather than dropping them; (iii) report \texttt{n\_scored},
+\texttt{unmatched\_frac}, and the partial-overlap parameter for every cell; and
+(iv) report partial methods at both their heuristic and their no-abstention
+parameterisation. Without these, a partial method's headline accuracy is partly a
+function of how much it declined to answer. We flag this as a reusable pitfall for
+spatial-registration benchmarks, not a quirk of one tool.
+
 \section{Results}
 \label{sec:results}
-\pending{} The degradation sweep is run after the damage renders
-(Figs.~\ref{fig:tear}--\ref{fig:others}) are validated. On completion this
-section reports:
+\pending{} All numbers await the common-spot re-run (\S\ref{sec:abstention}); no
+provisional or abstention-biased numbers are reported here. On completion this
+section reports, under common-spot scoring:
 \begin{itemize}
   \item Degradation curves (median error vs severity, one line per method,
   faceted by damage type): \texttt{results/degradation\_curves.png}.
@@ -225,7 +278,7 @@ section reports:
     PASTE  & \todo{--} & \todo{--} & \todo{--} & \todo{--} \\
     PASTE2 & \todo{--} & \todo{--} & \todo{--} & \todo{--} \\
     GPSA   & \todo{--} & \todo{--} & \todo{--} & \todo{--} \\
-    STalign & absent & absent & absent & absent \\
+    STalign & \todo{--} & \todo{--} & \todo{--} & \todo{--} \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -252,13 +305,13 @@ included at severity $\{0,4\}$ to probe this gap, but the primary leaderboard is
 on interior damage. \textbf{Self-damage plus synthetic misalignment.} The moving
 section is a damaged copy of itself under a known rigid misalignment, not a
 biologically distinct serial section; this isolates the damage effect but omits
-real inter-section variation. \textbf{Excluded methods.} STalign installs only on
-Python 3.11 + numpy$<$2 and, wired to its real LDDMM API, did not converge to a
-registration beating the no-op baseline on control transforms across the
-hyperparameters tried (and is slow on CPU); it is reported but excluded from the
-leaderboard rather than shown as mis-tuned numbers. PASTE's internal
-fused-Gromov--Wasserstein breaks against POT$\geq$0.9's \texttt{line\_search}; its
-partial-OT successor PASTE2 is used.
+real inter-section variation. \textbf{Methods included.} STalign installs only on
+Python 3.11 + numpy$<$2; wired to its real LDDMM API it runs on every damage type
+and is included (it is slow on CPU). PASTE's internal fused-Gromov--Wasserstein
+breaks against POT$\geq$0.9's \texttt{line\_search}, which added a positional
+gradient argument its closures reject; we patch it with a scoped compatibility
+shim, so both PASTE and its partial-OT successor PASTE2 are included. All five
+methods run under one environment.
 
 \section{Reproducibility}
 The damage generator is a standalone package (\texttt{pip install -e damage});
