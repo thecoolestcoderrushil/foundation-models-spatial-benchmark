@@ -1,0 +1,8 @@
+"donor","ref","mov","damage_type","severity","seed","flag","reason"
+"Br5292","151509","151510","tissue_loss","5","2","runtime_uncertain","timed during resume cold-start window overlapping this-session diagnostic load; runtime not clean (warmup falsified: original-session first-gpsa ~54s)"
+"Br5292","151509","151510","tissue_loss","5","3","runtime_uncertain","timed during resume cold-start window overlapping this-session diagnostic load; runtime not clean (warmup falsified: original-session first-gpsa ~54s)"
+"Br5292","151509","151510","tissue_loss","5","4","runtime_uncertain","timed during resume cold-start window overlapping this-session diagnostic load; runtime not clean (warmup falsified: original-session first-gpsa ~54s)"
+"Br5292","151509","151510","fold","0","0","runtime_uncertain","timed during resume cold-start window overlapping this-session diagnostic load; runtime not clean (warmup falsified: original-session first-gpsa ~54s)"
+"Br5292","151509","151510","fold","4","0","runtime_uncertain","timed during resume cold-start window overlapping this-session diagnostic load; runtime not clean (warmup falsified: original-session first-gpsa ~54s)"
+"Br5292","151509","151510","fold","4","1","runtime_uncertain","timed during resume cold-start window overlapping this-session diagnostic load; runtime not clean (warmup falsified: original-session first-gpsa ~54s)"
+"Br5292","151508","151509","tear","0","0","runtime_censored","gpsa hit --timeout (600s); runtime right-censored; failed=1 reason=timeout"
