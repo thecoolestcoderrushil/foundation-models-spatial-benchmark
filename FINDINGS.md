@@ -1,53 +1,36 @@
-# Findings — registration degradation under tissue damage
+# Findings - registration degradation under tissue damage
 
-> **Status: pre-sweep.** The damage model is built and rendered
-> (`results/damage_examples/`); the degradation sweep has not been run yet
-> (stop gate — renders reviewed first). The sections below are the analysis
-> template; quantitative results and the ranked leaderboard are filled in after
-> `src/run_benchmark.py` completes. Nothing here is fabricated ahead of the data.
+_Computed from `results/benchmark_results.csv` (31 method-cells). Numbers are mean per-cell median spot-pitch error over serial pairs and seeds, excluding failed cells._
 
-## Environment (established)
+## Median registration error (spot-pitches) by severity
 
-- **Foundation models** (`results/env_check.md`): all five single-cell FMs
-  (scGPT, Geneformer, UCE, scFoundation, Nicheformer) are unusable on this host
-  (Windows / CPU / Python 3.14) — scGPT & Geneformer install but fail to import,
-  the other three do not install. This is why the benchmark is CPU-only and
-  classical-method-only, and it is a reported negative, not a limitation we hide.
-- **Registration methods** (`results/methods_env.md`): `rigid`, `PASTE`, `PASTE2`
-  available; `STalign` fails to build its pinned numpy on Python 3.14; `GPSA`
-  requires a local install (`baselines/GPSA`). Absent methods are marked absent,
-  never stubbed.
 
-## Damage model (established)
+### tear
 
-Four seeded, reproducible damage types with exact per-spot ground truth, each
-over severity 0–5. Visual validation: `results/damage_examples/`. The generator
-is a standalone package (`damage/`, `pip install -e damage`).
-
-## Degradation leaderboard (TO FILL after sweep)
-
-For each damage type, the severity at which each method's median error crosses
-practical thresholds (e.g. 1, 2, 5 spot-pitches), and where each method **breaks**
-(failure rate > 50% or degenerate transform).
-
-| method | tear breaks at | tissue_loss breaks at | fold breaks at | stretch breaks at |
+| method | sev 0 | sev 2 | sev 4 | breaks at |
 |---|---|---|---|---|
-| rigid (floor) | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
-| PASTE | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
-| PASTE2 | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
-| GPSA | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
-| STalign | absent | absent | absent | absent |
+| `gpsa` | 3.11 | 3.31 | 5.69 | 4 |
+| `paste2` | 4.02 | 3.84 | 3.92 | never |
+| `rigid` | 2.92 | 2.94 | 4.97 | never |
 
-## Questions the sweep answers
+## Is the rigid floor competitive?
 
-1. Which damage type is hardest? (Hypothesis: tears/folds — discontinuous,
-   topology-changing — break smooth-deformation methods faster than tissue loss,
-   which partial-OT PASTE2 is designed for.)
-2. Does any method beat the parameter-free rigid floor once damage is severe, or
-   do they all collapse toward it?
-3. Compute vs robustness: is GPSA's cost justified by damage-robustness, or does
-   cheap PASTE2 dominate the Pareto front?
-4. Failure modes: crashes vs silent degenerate transforms — which methods fail
-   loudly vs quietly?
+- **tear** @ sev 2: rigid 2.94 vs paste2 3.84 pitch -> rigid <= paste2
 
-Negatives will be reported plainly.
+## Failures (crashes + degenerate/timeout)
+
+| method | damage | severity | failure rate |
+|---|---|---|---|
+| - | - | - | none observed |
+
+## Interpretation (from the numbers above)
+
+- The parameter-free rigid ICP floor is at least as good as PASTE2 at low damage (sev 2) on: tear. Expensive OT does not buy accuracy there.
+- On **tear**, `gpsa` breaks earliest (median error > 5 pitch by severity 4).
+
+## Excluded / caveats
+
+- **STalign**: real LDDMM API wired (py3.11 + numpy<2) but did not converge beating no-op on control transforms across tried hyperparameters; excluded rather than shown mis-tuned.
+- **PASTE**: POT>=0.9 `line_search` API break in its FGW; PASTE2 used.
+- **Damage realism**: primary tears are interior cracks (closed outline); the boundary-reaching `tear_edge` condition probes the gap.
+- Moving section = damaged self + known rigid misalignment (isolates damage; omits inter-section biology).
