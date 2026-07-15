@@ -23624,3 +23624,201 @@ Br8100,151675,151676,stretch,4,3,paste2,failed,0,2000,24.4,0,,2026-07-15T06:16:5
 Br8100,151675,151676,stretch,4,3,paste2,n_scored,991,2000,24.4,0,,2026-07-15T06:16:50Z
 Br8100,151675,151676,stretch,4,3,paste2,unmatched_frac,0.0,2000,24.4,0,,2026-07-15T06:16:50Z
 Br8100,151675,151676,stretch,4,3,paste2,s_used,1.0,2000,24.4,0,,2026-07-15T06:16:50Z
+Br8100,151675,151676,stretch,4,3,paste2_s1,mean_pitch,5.093389640144242,2000,25.08,0,,2026-07-15T06:17:15Z
+Br8100,151675,151676,stretch,4,3,paste2_s1,median_pitch,4.590746992359235,2000,25.08,0,,2026-07-15T06:17:15Z
+Br8100,151675,151676,stretch,4,3,paste2_s1,p90_pitch,9.020174099793214,2000,25.08,0,,2026-07-15T06:17:15Z
+Br8100,151675,151676,stretch,4,3,paste2_s1,label_acc,0.6941896024464832,2000,25.08,0,,2026-07-15T06:17:15Z
+Br8100,151675,151676,stretch,4,3,paste2_s1,runtime_s,25.081697463989258,2000,25.08,0,,2026-07-15T06:17:15Z
+Br8100,151675,151676,stretch,4,3,paste2_s1,failed,0,2000,25.08,0,,2026-07-15T06:17:15Z
+Br8100,151675,151676,stretch,4,3,paste2_s1,n_scored,991,2000,25.08,0,,2026-07-15T06:17:15Z
+Br8100,151675,151676,stretch,4,3,paste2_s1,unmatched_frac,0.0,2000,25.08,0,,2026-07-15T06:17:15Z
+Br8100,151675,151676,stretch,4,3,paste2_s1,s_used,1.0,2000,25.08,0,,2026-07-15T06:17:15Z
+Br8100,151675,151676,stretch,4,3,stalign,mean_pitch,4.603357302969262,2000,20.69,0,experimental,2026-07-15T06:17:35Z
+Br8100,151675,151676,stretch,4,3,stalign,median_pitch,4.182521058918638,2000,20.69,0,experimental,2026-07-15T06:17:35Z
+Br8100,151675,151676,stretch,4,3,stalign,p90_pitch,8.789618701989715,2000,20.69,0,experimental,2026-07-15T06:17:35Z
+Br8100,151675,151676,stretch,4,3,stalign,label_acc,0.5724489795918367,2000,20.69,0,experimental,2026-07-15T06:17:35Z
+Br8100,151675,151676,stretch,4,3,stalign,runtime_s,20.686596155166626,2000,20.69,0,experimental,2026-07-15T06:17:35Z
+Br8100,151675,151676,stretch,4,3,stalign,failed,0,2000,20.69,0,experimental,2026-07-15T06:17:35Z
+Br8100,151675,151676,stretch,4,3,stalign,n_scored,991,2000,20.69,0,experimental,2026-07-15T06:17:35Z
+Br8100,151675,151676,stretch,4,3,stalign,unmatched_frac,0.0,2000,20.69,0,experimental,2026-07-15T06:17:35Z
+Br8100,151675,151676,stretch,4,3,stalign,s_used,,2000,20.69,0,experimental,2026-07-15T06:17:35Z
+Br8100,151675,151676,stretch,4,3,gpsa,mean_pitch,3.7437453196607295,2000,83.66,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,3,gpsa,median_pitch,3.0338890975633994,2000,83.66,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,3,gpsa,p90_pitch,6.435582278671817,2000,83.66,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,3,gpsa,label_acc,0.6710659898477157,2000,83.66,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,3,gpsa,runtime_s,83.66333436965942,2000,83.66,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,3,gpsa,failed,0,2000,83.66,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,3,gpsa,n_scored,991,2000,83.66,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,3,gpsa,unmatched_frac,0.0,2000,83.66,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,3,gpsa,s_used,,2000,83.66,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,4,rigid,mean_pitch,5.402261494045154,2000,0.0,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,4,rigid,median_pitch,5.32250497784668,2000,0.0,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,4,rigid,p90_pitch,7.666928670960859,2000,0.0,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,4,rigid,label_acc,0.6944162436548224,2000,0.0,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,4,rigid,runtime_s,0.003576040267944336,2000,0.0,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,4,rigid,failed,0,2000,0.0,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,4,rigid,n_scored,991,2000,0.0,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,4,rigid,unmatched_frac,0.0,2000,0.0,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,4,rigid,s_used,,2000,0.0,0,,2026-07-15T06:18:59Z
+Br8100,151675,151676,stretch,4,4,paste,mean_pitch,4.569183669867119,2000,13.03,0,,2026-07-15T06:19:12Z
+Br8100,151675,151676,stretch,4,4,paste,median_pitch,4.590746992359231,2000,13.03,0,,2026-07-15T06:19:12Z
+Br8100,151675,151676,stretch,4,4,paste,p90_pitch,6.014669654378669,2000,13.03,0,,2026-07-15T06:19:12Z
+Br8100,151675,151676,stretch,4,4,paste,label_acc,0.8079268292682927,2000,13.03,0,,2026-07-15T06:19:12Z
+Br8100,151675,151676,stretch,4,4,paste,runtime_s,13.029954671859741,2000,13.03,0,,2026-07-15T06:19:12Z
+Br8100,151675,151676,stretch,4,4,paste,failed,0,2000,13.03,0,,2026-07-15T06:19:12Z
+Br8100,151675,151676,stretch,4,4,paste,n_scored,991,2000,13.03,0,,2026-07-15T06:19:12Z
+Br8100,151675,151676,stretch,4,4,paste,unmatched_frac,0.0,2000,13.03,0,,2026-07-15T06:19:12Z
+Br8100,151675,151676,stretch,4,4,paste,s_used,,2000,13.03,0,,2026-07-15T06:19:12Z
+Br8100,151675,151676,stretch,4,4,paste2,mean_pitch,5.38762049830986,2000,25.5,0,,2026-07-15T06:19:38Z
+Br8100,151675,151676,stretch,4,4,paste2,median_pitch,5.205758965678958,2000,25.5,0,,2026-07-15T06:19:38Z
+Br8100,151675,151676,stretch,4,4,paste2,p90_pitch,9.561550859353133,2000,25.5,0,,2026-07-15T06:19:38Z
+Br8100,151675,151676,stretch,4,4,paste2,label_acc,0.685336048879837,2000,25.5,0,,2026-07-15T06:19:38Z
+Br8100,151675,151676,stretch,4,4,paste2,runtime_s,25.502461194992065,2000,25.5,0,,2026-07-15T06:19:38Z
+Br8100,151675,151676,stretch,4,4,paste2,failed,0,2000,25.5,0,,2026-07-15T06:19:38Z
+Br8100,151675,151676,stretch,4,4,paste2,n_scored,991,2000,25.5,0,,2026-07-15T06:19:38Z
+Br8100,151675,151676,stretch,4,4,paste2,unmatched_frac,0.0,2000,25.5,0,,2026-07-15T06:19:38Z
+Br8100,151675,151676,stretch,4,4,paste2,s_used,1.0,2000,25.5,0,,2026-07-15T06:19:38Z
+Br8100,151675,151676,stretch,4,4,paste2_s1,mean_pitch,5.38762049830986,2000,24.18,0,,2026-07-15T06:20:02Z
+Br8100,151675,151676,stretch,4,4,paste2_s1,median_pitch,5.205758965678958,2000,24.18,0,,2026-07-15T06:20:02Z
+Br8100,151675,151676,stretch,4,4,paste2_s1,p90_pitch,9.561550859353133,2000,24.18,0,,2026-07-15T06:20:02Z
+Br8100,151675,151676,stretch,4,4,paste2_s1,label_acc,0.685336048879837,2000,24.18,0,,2026-07-15T06:20:02Z
+Br8100,151675,151676,stretch,4,4,paste2_s1,runtime_s,24.180914402008057,2000,24.18,0,,2026-07-15T06:20:02Z
+Br8100,151675,151676,stretch,4,4,paste2_s1,failed,0,2000,24.18,0,,2026-07-15T06:20:02Z
+Br8100,151675,151676,stretch,4,4,paste2_s1,n_scored,991,2000,24.18,0,,2026-07-15T06:20:02Z
+Br8100,151675,151676,stretch,4,4,paste2_s1,unmatched_frac,0.0,2000,24.18,0,,2026-07-15T06:20:02Z
+Br8100,151675,151676,stretch,4,4,paste2_s1,s_used,1.0,2000,24.18,0,,2026-07-15T06:20:02Z
+Br8100,151675,151676,stretch,4,4,stalign,mean_pitch,9.985264255056082,2000,25.13,0,experimental,2026-07-15T06:20:27Z
+Br8100,151675,151676,stretch,4,4,stalign,median_pitch,9.251675667052474,2000,25.13,0,experimental,2026-07-15T06:20:27Z
+Br8100,151675,151676,stretch,4,4,stalign,p90_pitch,16.464165491674805,2000,25.13,0,experimental,2026-07-15T06:20:27Z
+Br8100,151675,151676,stretch,4,4,stalign,label_acc,0.5896130346232179,2000,25.13,0,experimental,2026-07-15T06:20:27Z
+Br8100,151675,151676,stretch,4,4,stalign,runtime_s,25.125696420669556,2000,25.13,0,experimental,2026-07-15T06:20:27Z
+Br8100,151675,151676,stretch,4,4,stalign,failed,0,2000,25.13,0,experimental,2026-07-15T06:20:27Z
+Br8100,151675,151676,stretch,4,4,stalign,n_scored,991,2000,25.13,0,experimental,2026-07-15T06:20:27Z
+Br8100,151675,151676,stretch,4,4,stalign,unmatched_frac,0.0,2000,25.13,0,experimental,2026-07-15T06:20:27Z
+Br8100,151675,151676,stretch,4,4,stalign,s_used,,2000,25.13,0,experimental,2026-07-15T06:20:27Z
+Br8100,151675,151676,stretch,4,4,gpsa,mean_pitch,19.821602927309563,2000,90.7,1,RuntimeError: [enforce fail at ..\c10\core\impl\alloc_cpu.cpp:72] data. DefaultCPUAllocator: not enough memory: you trie,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,4,4,gpsa,median_pitch,20.365027106359285,2000,90.7,1,RuntimeError: [enforce fail at ..\c10\core\impl\alloc_cpu.cpp:72] data. DefaultCPUAllocator: not enough memory: you trie,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,4,4,gpsa,p90_pitch,29.027851465040854,2000,90.7,1,RuntimeError: [enforce fail at ..\c10\core\impl\alloc_cpu.cpp:72] data. DefaultCPUAllocator: not enough memory: you trie,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,4,4,gpsa,label_acc,nan,2000,90.7,1,RuntimeError: [enforce fail at ..\c10\core\impl\alloc_cpu.cpp:72] data. DefaultCPUAllocator: not enough memory: you trie,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,4,4,gpsa,runtime_s,90.70491528511047,2000,90.7,1,RuntimeError: [enforce fail at ..\c10\core\impl\alloc_cpu.cpp:72] data. DefaultCPUAllocator: not enough memory: you trie,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,4,4,gpsa,failed,1,2000,90.7,1,RuntimeError: [enforce fail at ..\c10\core\impl\alloc_cpu.cpp:72] data. DefaultCPUAllocator: not enough memory: you trie,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,4,4,gpsa,n_scored,991,2000,90.7,1,RuntimeError: [enforce fail at ..\c10\core\impl\alloc_cpu.cpp:72] data. DefaultCPUAllocator: not enough memory: you trie,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,4,4,gpsa,unmatched_frac,1.0,2000,90.7,1,RuntimeError: [enforce fail at ..\c10\core\impl\alloc_cpu.cpp:72] data. DefaultCPUAllocator: not enough memory: you trie,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,4,4,gpsa,s_used,,2000,90.7,1,RuntimeError: [enforce fail at ..\c10\core\impl\alloc_cpu.cpp:72] data. DefaultCPUAllocator: not enough memory: you trie,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,5,0,rigid,mean_pitch,6.5772490133897366,2000,0.01,0,,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,5,0,rigid,median_pitch,5.312776264726869,2000,0.01,0,,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,5,0,rigid,p90_pitch,11.043657941747771,2000,0.01,0,,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,5,0,rigid,label_acc,0.6307222787385555,2000,0.01,0,,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,5,0,rigid,runtime_s,0.01364445686340332,2000,0.01,0,,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,5,0,rigid,failed,0,2000,0.01,0,,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,5,0,rigid,n_scored,991,2000,0.01,0,,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,5,0,rigid,unmatched_frac,0.0,2000,0.01,0,,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,5,0,rigid,s_used,,2000,0.01,0,,2026-07-15T06:21:58Z
+Br8100,151675,151676,stretch,5,0,paste,mean_pitch,19.821602927309563,2000,1.3,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:21:59Z
+Br8100,151675,151676,stretch,5,0,paste,median_pitch,20.365027106359285,2000,1.3,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:21:59Z
+Br8100,151675,151676,stretch,5,0,paste,p90_pitch,29.027851465040854,2000,1.3,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:21:59Z
+Br8100,151675,151676,stretch,5,0,paste,label_acc,nan,2000,1.3,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:21:59Z
+Br8100,151675,151676,stretch,5,0,paste,runtime_s,1.3019342422485352,2000,1.3,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:21:59Z
+Br8100,151675,151676,stretch,5,0,paste,failed,1,2000,1.3,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:21:59Z
+Br8100,151675,151676,stretch,5,0,paste,n_scored,991,2000,1.3,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:21:59Z
+Br8100,151675,151676,stretch,5,0,paste,unmatched_frac,1.0,2000,1.3,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:21:59Z
+Br8100,151675,151676,stretch,5,0,paste,s_used,,2000,1.3,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:21:59Z
+Br8100,151675,151676,stretch,5,0,paste2,mean_pitch,19.821602927309563,2000,3.6,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:03Z
+Br8100,151675,151676,stretch,5,0,paste2,median_pitch,20.365027106359285,2000,3.6,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:03Z
+Br8100,151675,151676,stretch,5,0,paste2,p90_pitch,29.027851465040854,2000,3.6,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:03Z
+Br8100,151675,151676,stretch,5,0,paste2,label_acc,nan,2000,3.6,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:03Z
+Br8100,151675,151676,stretch,5,0,paste2,runtime_s,3.5952446460723877,2000,3.6,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:03Z
+Br8100,151675,151676,stretch,5,0,paste2,failed,1,2000,3.6,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:03Z
+Br8100,151675,151676,stretch,5,0,paste2,n_scored,991,2000,3.6,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:03Z
+Br8100,151675,151676,stretch,5,0,paste2,unmatched_frac,1.0,2000,3.6,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:03Z
+Br8100,151675,151676,stretch,5,0,paste2,s_used,1.0,2000,3.6,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:03Z
+Br8100,151675,151676,stretch,5,0,paste2_s1,mean_pitch,19.821602927309563,2000,9.35,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:12Z
+Br8100,151675,151676,stretch,5,0,paste2_s1,median_pitch,20.365027106359285,2000,9.35,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:12Z
+Br8100,151675,151676,stretch,5,0,paste2_s1,p90_pitch,29.027851465040854,2000,9.35,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:12Z
+Br8100,151675,151676,stretch,5,0,paste2_s1,label_acc,nan,2000,9.35,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:12Z
+Br8100,151675,151676,stretch,5,0,paste2_s1,runtime_s,9.349311113357544,2000,9.35,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:12Z
+Br8100,151675,151676,stretch,5,0,paste2_s1,failed,1,2000,9.35,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:12Z
+Br8100,151675,151676,stretch,5,0,paste2_s1,n_scored,991,2000,9.35,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:12Z
+Br8100,151675,151676,stretch,5,0,paste2_s1,unmatched_frac,1.0,2000,9.35,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:12Z
+Br8100,151675,151676,stretch,5,0,paste2_s1,s_used,1.0,2000,9.35,1,"MemoryError: Unable to allocate 30.5 MiB for an array with shape (2000, 2000) and data type float64",2026-07-15T06:22:12Z
+Br8100,151675,151676,stretch,5,0,stalign,mean_pitch,13.220561628167115,2000,23.31,0,experimental,2026-07-15T06:22:35Z
+Br8100,151675,151676,stretch,5,0,stalign,median_pitch,11.455272200120614,2000,23.31,0,experimental,2026-07-15T06:22:35Z
+Br8100,151675,151676,stretch,5,0,stalign,p90_pitch,20.662564777160558,2000,23.31,0,experimental,2026-07-15T06:22:35Z
+Br8100,151675,151676,stretch,5,0,stalign,label_acc,0.43051201671891326,2000,23.31,0,experimental,2026-07-15T06:22:35Z
+Br8100,151675,151676,stretch,5,0,stalign,runtime_s,23.3095920085907,2000,23.31,0,experimental,2026-07-15T06:22:35Z
+Br8100,151675,151676,stretch,5,0,stalign,failed,0,2000,23.31,0,experimental,2026-07-15T06:22:35Z
+Br8100,151675,151676,stretch,5,0,stalign,n_scored,991,2000,23.31,0,experimental,2026-07-15T06:22:35Z
+Br8100,151675,151676,stretch,5,0,stalign,unmatched_frac,0.0,2000,23.31,0,experimental,2026-07-15T06:22:35Z
+Br8100,151675,151676,stretch,5,0,stalign,s_used,,2000,23.31,0,experimental,2026-07-15T06:22:35Z
+Br8100,151675,151676,stretch,5,0,gpsa,mean_pitch,6.177913997217234,2000,87.61,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,0,gpsa,median_pitch,4.882823434891581,2000,87.61,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,0,gpsa,p90_pitch,10.431098829197511,2000,87.61,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,0,gpsa,label_acc,0.6365482233502539,2000,87.61,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,0,gpsa,runtime_s,87.60661005973816,2000,87.61,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,0,gpsa,failed,0,2000,87.61,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,0,gpsa,n_scored,991,2000,87.61,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,0,gpsa,unmatched_frac,0.0,2000,87.61,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,0,gpsa,s_used,,2000,87.61,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,1,rigid,mean_pitch,6.236052217007456,2000,0.0,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,1,rigid,median_pitch,5.853392070876736,2000,0.0,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,1,rigid,p90_pitch,8.195554485365285,2000,0.0,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,1,rigid,label_acc,0.6073619631901841,2000,0.0,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,1,rigid,runtime_s,0.0020117759704589844,2000,0.0,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,1,rigid,failed,0,2000,0.0,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,1,rigid,n_scored,991,2000,0.0,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,1,rigid,unmatched_frac,0.0,2000,0.0,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,1,rigid,s_used,,2000,0.0,0,,2026-07-15T06:24:03Z
+Br8100,151675,151676,stretch,5,1,paste,mean_pitch,4.6819375437645,2000,13.15,0,,2026-07-15T06:24:16Z
+Br8100,151675,151676,stretch,5,1,paste,median_pitch,4.597583423815199,2000,13.15,0,,2026-07-15T06:24:16Z
+Br8100,151675,151676,stretch,5,1,paste,p90_pitch,7.011978367220748,2000,13.15,0,,2026-07-15T06:24:16Z
+Br8100,151675,151676,stretch,5,1,paste,label_acc,0.780264496439471,2000,13.15,0,,2026-07-15T06:24:16Z
+Br8100,151675,151676,stretch,5,1,paste,runtime_s,13.152637004852295,2000,13.15,0,,2026-07-15T06:24:16Z
+Br8100,151675,151676,stretch,5,1,paste,failed,0,2000,13.15,0,,2026-07-15T06:24:16Z
+Br8100,151675,151676,stretch,5,1,paste,n_scored,991,2000,13.15,0,,2026-07-15T06:24:16Z
+Br8100,151675,151676,stretch,5,1,paste,unmatched_frac,0.0,2000,13.15,0,,2026-07-15T06:24:16Z
+Br8100,151675,151676,stretch,5,1,paste,s_used,,2000,13.15,0,,2026-07-15T06:24:16Z
+Br8100,151675,151676,stretch,5,1,paste2,mean_pitch,5.2488857801638265,2000,19.38,0,,2026-07-15T06:24:36Z
+Br8100,151675,151676,stretch,5,1,paste2,median_pitch,4.995508916574578,2000,19.38,0,,2026-07-15T06:24:36Z
+Br8100,151675,151676,stretch,5,1,paste2,p90_pitch,9.558474480724126,2000,19.38,0,,2026-07-15T06:24:36Z
+Br8100,151675,151676,stretch,5,1,paste2,label_acc,0.6901121304791029,2000,19.38,0,,2026-07-15T06:24:36Z
+Br8100,151675,151676,stretch,5,1,paste2,runtime_s,19.375547170639038,2000,19.38,0,,2026-07-15T06:24:36Z
+Br8100,151675,151676,stretch,5,1,paste2,failed,0,2000,19.38,0,,2026-07-15T06:24:36Z
+Br8100,151675,151676,stretch,5,1,paste2,n_scored,991,2000,19.38,0,,2026-07-15T06:24:36Z
+Br8100,151675,151676,stretch,5,1,paste2,unmatched_frac,0.0,2000,19.38,0,,2026-07-15T06:24:36Z
+Br8100,151675,151676,stretch,5,1,paste2,s_used,1.0,2000,19.38,0,,2026-07-15T06:24:36Z
+Br8100,151675,151676,stretch,5,1,paste2_s1,mean_pitch,5.2488857801638265,2000,19.64,0,,2026-07-15T06:24:55Z
+Br8100,151675,151676,stretch,5,1,paste2_s1,median_pitch,4.995508916574578,2000,19.64,0,,2026-07-15T06:24:55Z
+Br8100,151675,151676,stretch,5,1,paste2_s1,p90_pitch,9.558474480724126,2000,19.64,0,,2026-07-15T06:24:55Z
+Br8100,151675,151676,stretch,5,1,paste2_s1,label_acc,0.6901121304791029,2000,19.64,0,,2026-07-15T06:24:55Z
+Br8100,151675,151676,stretch,5,1,paste2_s1,runtime_s,19.640271425247192,2000,19.64,0,,2026-07-15T06:24:55Z
+Br8100,151675,151676,stretch,5,1,paste2_s1,failed,0,2000,19.64,0,,2026-07-15T06:24:55Z
+Br8100,151675,151676,stretch,5,1,paste2_s1,n_scored,991,2000,19.64,0,,2026-07-15T06:24:55Z
+Br8100,151675,151676,stretch,5,1,paste2_s1,unmatched_frac,0.0,2000,19.64,0,,2026-07-15T06:24:55Z
+Br8100,151675,151676,stretch,5,1,paste2_s1,s_used,1.0,2000,19.64,0,,2026-07-15T06:24:55Z
+Br8100,151675,151676,stretch,5,1,stalign,mean_pitch,21.896441324688872,2000,23.71,0,experimental,2026-07-15T06:25:19Z
+Br8100,151675,151676,stretch,5,1,stalign,median_pitch,21.204367138363306,2000,23.71,0,experimental,2026-07-15T06:25:19Z
+Br8100,151675,151676,stretch,5,1,stalign,p90_pitch,26.273979525277326,2000,23.71,0,experimental,2026-07-15T06:25:19Z
+Br8100,151675,151676,stretch,5,1,stalign,label_acc,0.12829736211031176,2000,23.71,0,experimental,2026-07-15T06:25:19Z
+Br8100,151675,151676,stretch,5,1,stalign,runtime_s,23.705559968948364,2000,23.71,0,experimental,2026-07-15T06:25:19Z
+Br8100,151675,151676,stretch,5,1,stalign,failed,0,2000,23.71,0,experimental,2026-07-15T06:25:19Z
+Br8100,151675,151676,stretch,5,1,stalign,n_scored,991,2000,23.71,0,experimental,2026-07-15T06:25:19Z
+Br8100,151675,151676,stretch,5,1,stalign,unmatched_frac,0.0,2000,23.71,0,experimental,2026-07-15T06:25:19Z
+Br8100,151675,151676,stretch,5,1,stalign,s_used,,2000,23.71,0,experimental,2026-07-15T06:25:19Z
+Br8100,151675,151676,stretch,5,1,gpsa,mean_pitch,6.2115564012655735,2000,93.36,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,1,gpsa,median_pitch,5.793362705633569,2000,93.36,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,1,gpsa,p90_pitch,8.228526814831744,2000,93.36,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,1,gpsa,label_acc,0.6042944785276073,2000,93.36,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,1,gpsa,runtime_s,93.3620617389679,2000,93.36,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,1,gpsa,failed,0,2000,93.36,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,1,gpsa,n_scored,991,2000,93.36,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,1,gpsa,unmatched_frac,0.0,2000,93.36,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,1,gpsa,s_used,,2000,93.36,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,2,rigid,mean_pitch,8.22914614706802,2000,0.0,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,2,rigid,median_pitch,7.906182743207942,2000,0.0,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,2,rigid,p90_pitch,10.713778061935521,2000,0.0,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,2,rigid,label_acc,0.6472986748216106,2000,0.0,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,2,rigid,runtime_s,0.004528045654296875,2000,0.0,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,2,rigid,failed,0,2000,0.0,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,2,rigid,n_scored,991,2000,0.0,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,2,rigid,unmatched_frac,0.0,2000,0.0,0,,2026-07-15T06:26:52Z
+Br8100,151675,151676,stretch,5,2,rigid,s_used,,2000,0.0,0,,2026-07-15T06:26:52Z
